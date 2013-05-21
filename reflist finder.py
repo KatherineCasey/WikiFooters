@@ -15,7 +15,7 @@ def findReflist(pageName):
     #print (text)
     for line in text:
         #print (line)
-        matchObj = re.search(r'\{{2}[Rr]eflist\}{2}', line)
+        matchObj = re.search(r'\{{2}[Rr]eflist', line)
         if matchObj:
            print (line)
            return True
