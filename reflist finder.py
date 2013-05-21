@@ -42,7 +42,7 @@ def findExternalLinks(text):
            next
     else:
          match = False
-         return [match, extLinkLoc]  
+         return [match, extLinkLoc]
 
 f = open("articles list.txt", 'r')
 #files = f.read()
@@ -55,8 +55,11 @@ for line in f:
        matchFound = findExternalLinks(text)[0]
        print (matchFound)
        matchLoc = findExternalLinks(text)[1]
-       print (matchLoc)
-       print ('---------')
+       if matchLoc == 'none':
+          print ('---------')
+       else:
+            print (matchLoc,text[matchLoc])
+            print ('---------')
     else:
        next
 f.close()
