@@ -1,13 +1,16 @@
 from urllib.request import urlopen
 import re
 
+
+
 def wikitextGrabber(pageName):
+    pageName = pageName.strip()
     URL = "http://en.wikipedia.org/w/api.php?format=json&action=query&titles="+pageName+"&prop=revisions&rvprop=content"
-    #print (URL)
-    
+
     rawtext = urlopen(URL)
     text = str(rawtext.readline())
     text = text.split('\\n')
+    #print (text)
     return text
 
 def findReflist(pageName):
@@ -15,8 +18,9 @@ def findReflist(pageName):
     #print (text)
     for line in text:
         #print (line)
-        matchObj = re.search(r'\{{2}[Rr]eflist', line)
-        if matchObj:
+        matchObjTemplate = re.search(r'\{{2}[Rr]eflist', line)
+        matchObjTag = re.search(r'\<[Rr]eferences', line)
+        if matchObjTemplate or matchObjTag:
            print (line)
            return True
         else:
@@ -24,8 +28,17 @@ def findReflist(pageName):
     else:
          return False
 
-refFound = findReflist("Sophia_Smith")
-if refFound == True:
-   print ("Woohoo!")
-else:
-   print ("Boo :(")
+def findExternalLinks(pageName):
+    pass
+
+f = open("articles list.txt", 'r')
+#files = f.read()
+for line in f:
+    line = str(line)
+    #print (line)
+    refFound = findReflist(line)
+    if refFound == True:
+       print ("References found in",line)
+    else:
+       print ("No references found in",line)
+f.close()
