@@ -13,56 +13,33 @@ def wikitextGrabber(pageName):
     return text
     #returns a list of the lines in the text, split at newline
     
-def findSection(text,regex):
+def findSection(text, *regex):
     sectionLoc = 'none'
-    sectionIden = regex
-    for index in range(0,len(text)-1):
-        matchSection = re.search(sectionIden, text[index])
-        if matchSection:
-           match = True
-           sectionLoc = index
-           break
+    #sectionIden = regex
+    if len(regex) == 0:
+       print ("Error: You must specify at least one regular expression to be compiled.")
     else:
-         match = False
+        for index in range(0,len(text)-1):
+             for spot in regex:
+                 arg = re.compile(spot)
+                 matchSection = re.search(arg, text[index])
+                 if matchSection:
+                    match = True
+                    sectionLoc = index
+                    break
+        else:
+             match = False
     return match, sectionLoc
-
-def findReflist(text):
-    refsLoc = 'none'
-    refsTemplateIden = (r'\{{2}[Rr]eflist')
-    refsTagIden = (r'\<[Rr]eferences')
-    for index in range(0,len(text)-1):
-        matchRefs = re.search(refsTemplateIden or refsTagIden, text[index])
-        if matchRefs:
-           match = True
-           refsLoc = index
-           break
-    else:
-         match = False
-    return match, refsLoc
-
-def findWorks(text):
-    worksLoc = 'none'
-    worksIden = re.compile(r'== *(Works *==|Bibliography|Publications|Source)')
-    ographiesIden = re.compile(r'ography *==')
-    for index in range(0,len(text)-1):
-        matchWorks = re.search(worksIden or ographiesIden, text[index])
-        if matchWorks:
-           worksLoc = index
-           match = True
-           break
-    else:
-           match = False
-    return match, worksLoc
 
 f = open("articles list.txt", 'r')
 
-refsTemplateIden = re.compile(r'\{{2}[Rr]eflist')
-refsTagIden = re.compile(r'\<[Rr]eferences')
-linkIden = re.compile(r'==[eE]xternal [Ll]inks')
-catIden = re.compile(r'\[\[[cC]ategory')
-worksIden = re.compile(r'== *(Works *==|Bibliography|Publications|Source)')
-ographiesIden = re.compile(r'ography *==')
-seeIden = re.compile(r'== *See [Aa]lso')
+refsTemplateIden = r'\{{2}[Rr]eflist'
+refsTagIden = r'\<[Rr]eferences'
+linkIden = r'==[eE]xternal [Ll]inks'
+catIden = r'\[\[[cC]ategory'
+worksIden = r'== *(Works *==|Bibliography|Publications|Source)'
+ographiesIden = r'ography *=='
+seeIden = r'== *See [Aa]lso'
 
 #files = f.read()
 for line in f:
@@ -70,10 +47,10 @@ for line in f:
     print (line)
     text = wikitextGrabber(line)
 
-    print ("Reflist?",findReflist(text))
+    print ("Reflist?",findSection(text, refsTemplateIden, refsTagIden))
     print ("External Links?", findSection(text, linkIden))
     print ("Categories?", findSection(text, catIden))
-    print ("Works?", findWorks(text))
+    print ("Works?", findSection(text, worksIden, ographiesIden))
     print ("See Also?", findSection(text, seeIden))
     print ("---------")
 f.close()
