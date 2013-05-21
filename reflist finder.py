@@ -12,54 +12,108 @@ def wikitextGrabber(pageName):
     text = text.split('\\n')
     return text
     #returns a list of the lines in the text, split at newline
-
-def findReflist(text, pageName):
-    #text =  wikitextGrabber(pageName)
-    #print (text)
-    for line in text:
-        #print (line)
-        matchObjTemplate = re.search(r'\{{2}[Rr]eflist', line)
-        matchObjTag = re.search(r'\<[Rr]eferences', line)
-        if matchObjTemplate or matchObjTag:
-           print ("References found in",pageName)
-           return True
-        else:
-           next
+    
+def findSection(text,regex):
+    sectionLoc = 'none'
+    sectionIden = regex
+    for index in range(0,len(text)-1):
+        matchSection = re.search(sectionIden, text[index])
+        if matchSection:
+           match = True
+           sectionLoc = index
+           break
     else:
-         print ("No references found in", pageName)
-         return False
+         match = False
+    return match, sectionLoc
+
+def findReflist(text):
+    refsLoc = 'none'
+    refsTemplateIden = (r'\{{2}[Rr]eflist')
+    refsTagIden = (r'\<[Rr]eferences')
+    for index in range(0,len(text)-1):
+        matchRefs = re.search(refsTemplateIden or refsTagIden, text[index])
+        if matchRefs:
+           match = True
+           refsLoc = index
+           break
+    else:
+         match = False
+    return match, refsLoc
 
 def findExternalLinks(text):
+    #determine whether an EL section is present, and find its location
     extLinkLoc = 'none'
-    linkIden = re.compile(r'[eE]xternal [Ll]inks')
+    linkIden = re.compile(r'==[eE]xternal [Ll]inks')
     for index in range(0,len(text)-1):
         matchLinks = re.search(linkIden, text[index])
         if matchLinks:
            extLinkLoc = index
            match = True
-           return [match, extLinkLoc]
-        else:
-           next
+           break
     else:
          match = False
-         return [match, extLinkLoc]
+    return match, extLinkLoc
+
+def findCategories(text):
+    catLoc = 'none'
+    catIden = re.compile(r'\[\[[cC]ategory')
+    for index in range(0,len(text)-1):
+        matchCats = re.search(catIden, text[index])
+        if matchCats:
+           catLoc = index
+           match = True
+           break
+    else:
+           match = False
+    return match, catLoc
+  
+def findWorks(text):
+    worksLoc = 'none'
+    worksIden = re.compile(r'== *(Works *==|Bibliography|Publications|Source)')
+    ographiesIden = re.compile(r'ography *==')
+    for index in range(0,len(text)-1):
+        matchWorks = re.search(worksIden or ographiesIden, text[index])
+        if matchWorks:
+           worksLoc = index
+           match = True
+           break
+    else:
+           match = False
+    return match, worksLoc
+
+def findSeeAlso(text):
+    seeLoc = 'none'
+    seeIden = re.compile(r'== *See [Aa]lso')
+    for index in range(0,len(text)-1):
+        matchSee = re.search(seeIden, text[index])
+        if matchSee:
+           seeLoc = index
+           match = True
+           break
+    else:
+           match = False
+    return match, seeLoc
 
 f = open("articles list.txt", 'r')
+
+refsTemplateIden = re.compile(r'\{{2}[Rr]eflist')
+refsTagIden = re.compile(r'\<[Rr]eferences')
+linkIden = re.compile(r'==[eE]xternal [Ll]inks')
+catIden = re.compile(r'\[\[[cC]ategory')
+worksIden = re.compile(r'== *(Works *==|Bibliography|Publications|Source)')
+ographiesIden = re.compile(r'ography *==')
+seeIden = re.compile(r'== *See [Aa]lso')
+
 #files = f.read()
 for line in f:
     line = str(line)
-    #print (line)
+    print (line)
     text = wikitextGrabber(line)
-    if findReflist(text, line):
-       print (line)
-       matchFound = findExternalLinks(text)[0]
-       print (matchFound)
-       matchLoc = findExternalLinks(text)[1]
-       if matchLoc == 'none':
-          print ('---------')
-       else:
-            print (matchLoc,text[matchLoc])
-            print ('---------')
-    else:
-       next
+
+    print ("Reflist?",findReflist(text))
+    print ("External Links?", findSection(text, linkIden))
+    print ("Categories?", findSection(text, catIden))
+    print ("Works?", findWorks(text))
+    print ("See Also?", findSection(text, seeIden))
+    print ("---------")
 f.close()
