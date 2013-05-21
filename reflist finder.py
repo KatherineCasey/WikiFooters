@@ -40,33 +40,6 @@ def findReflist(text):
          match = False
     return match, refsLoc
 
-def findExternalLinks(text):
-    #determine whether an EL section is present, and find its location
-    extLinkLoc = 'none'
-    linkIden = re.compile(r'==[eE]xternal [Ll]inks')
-    for index in range(0,len(text)-1):
-        matchLinks = re.search(linkIden, text[index])
-        if matchLinks:
-           extLinkLoc = index
-           match = True
-           break
-    else:
-         match = False
-    return match, extLinkLoc
-
-def findCategories(text):
-    catLoc = 'none'
-    catIden = re.compile(r'\[\[[cC]ategory')
-    for index in range(0,len(text)-1):
-        matchCats = re.search(catIden, text[index])
-        if matchCats:
-           catLoc = index
-           match = True
-           break
-    else:
-           match = False
-    return match, catLoc
-  
 def findWorks(text):
     worksLoc = 'none'
     worksIden = re.compile(r'== *(Works *==|Bibliography|Publications|Source)')
@@ -80,19 +53,6 @@ def findWorks(text):
     else:
            match = False
     return match, worksLoc
-
-def findSeeAlso(text):
-    seeLoc = 'none'
-    seeIden = re.compile(r'== *See [Aa]lso')
-    for index in range(0,len(text)-1):
-        matchSee = re.search(seeIden, text[index])
-        if matchSee:
-           seeLoc = index
-           match = True
-           break
-    else:
-           match = False
-    return match, seeLoc
 
 f = open("articles list.txt", 'r')
 
